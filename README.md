@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/xq6oqrt5t6r3k1xg?svg=true)](https://ci.appveyor.com/project/Ac9I-Fedulova/hw-web)
