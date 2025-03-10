@@ -68,7 +68,7 @@ public class CardOrderTest {
         driver.findElement(By.cssSelector("button")).click();
         WebElement actual = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
         assertTrue(actual.isDisplayed());
-        assertEquals("Имя и Фамилия указанные неверно. Допустимы только русские буквы, пробелы и дефисы.",
+        assertEquals("Фамилия и Имя указаны неверно. Допустимы только русские буквы, пробелы и дефисы",
                 actual.getText().trim());
     }
 
