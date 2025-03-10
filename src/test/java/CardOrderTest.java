@@ -9,7 +9,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
 
 public class CardOrderTest {
     private WebDriver driver;
@@ -45,8 +44,67 @@ public class CardOrderTest {
         driver.findElement(By.cssSelector("button")).click();
         WebElement actual = driver.findElement(By.cssSelector("[data-test-id='order-success']"));
         assertTrue(actual.isDisplayed());
-        assertEquals(
-                "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.",
+        assertEquals("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.",
                 actual.getText().trim());
+    }
+
+    @Test
+    void shouldNotSubmitFormWithEmptyFieldName() { // пустое поле имя
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='phone'] .input__control")).sendKeys("+79998881122");
+        driver.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        driver.findElement(By.cssSelector("button")).click();
+        WebElement actual = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
+        assertTrue(actual.isDisplayed());
+        assertEquals("Поле обязательно для заполнения", actual.getText().trim());
+    }
+
+    @Test
+    void shouldNotSubmitFormContainingLatinCharactersInFieldName() { //поле имя на латинице
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] .input__control")).sendKeys("Borisov Ivan");
+        form.findElement(By.cssSelector("[data-test-id='phone'] .input__control")).sendKeys("+79998881122");
+        driver.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        driver.findElement(By.cssSelector("button")).click();
+        WebElement actual = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
+        assertTrue(actual.isDisplayed());
+        assertEquals("Имя и Фамилия указанные неверно. Допустимы только русские буквы, пробелы и дефисы.",
+                actual.getText().trim());
+    }
+
+    @Test
+    void shouldNotSubmitFormWithEmptyFieldPhone() { // пустое поле телефон
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] .input__control")).sendKeys("Петрова Анна");
+        driver.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        driver.findElement(By.cssSelector("button")).click();
+        WebElement actual = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub"));
+        assertTrue(actual.isDisplayed());
+        assertEquals("Поле обязательно для заполнения", actual.getText().trim());
+    }
+
+    @Test
+    void shouldNotSubmitFormContainingFirstCharacter8InFieldPhone() { //номер телефона начинается c 8
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] .input__control")).sendKeys("Петрова Анна");
+        form.findElement(By.cssSelector("[data-test-id='phone'] .input__control")).sendKeys("89998881122");
+        driver.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        driver.findElement(By.cssSelector("button")).click();
+        WebElement actual = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub"));
+        assertTrue(actual.isDisplayed());
+        assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.",
+                actual.getText().trim());
+    }
+
+    @Test
+    void shouldNotSubmitFormWithoutCheckingCheckbox() { // без отметки чекбокса
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] .input__control")).sendKeys("Петрова Анна");
+        form.findElement(By.cssSelector("[data-test-id='phone'] .input__control")).sendKeys("+79998881122");
+        driver.findElement(By.cssSelector("button")).click();
+        WebElement actual = driver.findElement(By.cssSelector("[data-test-id='agreement'].input_invalid .checkbox__text"));
+        assertTrue(actual.isDisplayed());
+        assertEquals("Я соглашаюсь с условиями обработки и использования моих персональных" +
+                " данных и разрешаю сделать запрос в бюро кредитных историй", actual.getText().trim());
     }
 }
