@@ -23,7 +23,7 @@ public class CardOrderTest {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
-        options.addArguments("--headless");
+       // options.addArguments("--headless");
         driver = new ChromeDriver(options);
 
         driver.get("http://localhost:9999");
@@ -63,6 +63,19 @@ public class CardOrderTest {
     void shouldNotSubmitFormContainingLatinCharactersInFieldName() { //поле имя на латинице
         WebElement form = driver.findElement(By.cssSelector("form"));
         form.findElement(By.cssSelector("[data-test-id='name'] .input__control")).sendKeys("Borisov Ivan");
+        form.findElement(By.cssSelector("[data-test-id='phone'] .input__control")).sendKeys("+79998881122");
+        driver.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        driver.findElement(By.cssSelector("button")).click();
+        WebElement actual = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
+        assertTrue(actual.isDisplayed());
+        assertEquals("Фамилия и Имя указаны неверно. Допустимы только русские буквы, пробелы и дефисы",
+                actual.getText().trim());
+    }
+
+    @Test
+    void shouldNotSubmitFormContainingOnlyOneWordInField_LastNameAndFirstName() { //в поле имя одно слово на кириллице
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] .input__control")).sendKeys("Анна");
         form.findElement(By.cssSelector("[data-test-id='phone'] .input__control")).sendKeys("+79998881122");
         driver.findElement(By.cssSelector("[data-test-id='agreement']")).click();
         driver.findElement(By.cssSelector("button")).click();
